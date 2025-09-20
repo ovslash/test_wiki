@@ -1,5 +1,5 @@
 ---
-title: Bienvenue !
+title: Bienvenue !!
 description: Page d’accueil de ma doc Starlight.
 ---
 
