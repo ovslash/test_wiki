@@ -2,7 +2,7 @@ name: Deploy Astro site to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # change en ta branche si besoin
+    branches: [ "**" ]   # change en ta branche si besoin
   workflow_dispatch:
 
 permissions:
