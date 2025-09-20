@@ -3,6 +3,8 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 
 export default defineConfig({
+  site: 'https://ovslash.github.io/test_wiki',
+  base: '/test_wiki/',
   integrations: [
     starlight({
       title: 'Mon Aide-Mémoire',
