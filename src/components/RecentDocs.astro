@@ -1,62 +1,79 @@
 ---
-// src/components/RecentDocs.astro
 import { getCollection, type CollectionEntry } from 'astro:content';
 
-// toutes les pages de la doc
 const entries = await getCollection('docs');
 
-// fabrique un href à partir d'un "id" d'entrée de collection
-const toUrlFromId = (id: string) => {
-  // préfixe de langue si votre site n’est pas en locale "root"
-  const locale = Astro.locals?.starlightRoute?.locale;
-  const localePrefix = locale ? `/${locale}` : '';
-
-  // 1) retire /index.md/ .mdx et normalise le trailing slash
-  let path = '/' + id
-    .replace(/(\/)?index\.mdx?$/i, '$1')   // .../guide/index.md -> .../guide
-    .replace(/\.(md|mdx|markdoc)$/i, '');  // .../guide -> .../guide
-  if (!path.endsWith('/')) path += '/';
-
-  return `${localePrefix}${path}`;
+// Construit un path propre à partir de l'id (docsLoader)
+const idToPath = (id: string) => {
+  let p = id
+    .replace(/(\/)?index\.mdx?$/i, '$1')   // ".../index.mdx" -> ".../"
+    .replace(/\.(md|mdx|markdoc)$/i, '');  // retire l'extension
+  if (!p.startsWith('/')) p = '/' + p;
+  if (!p.endsWith('/')) p += '/';
+  return p;
 };
 
-// récupère une date pour trier (lastUpdated en frontmatter > date > created)
-const getDate = (e: CollectionEntry<'docs'>) => {
+// Joindre BASE_URL + path sans double slash
+const joinBase = (base: string, path: string) => {
+  const b = base.endsWith('/') ? base : base + '/';
+  const p = path.startsWith('/') ? path.slice(1) : path;
+  return (b + p).replace(/\/{2,}/g, '/');
+};
+
+// ✅ Utilise la base configurée dans astro.config ("/test_wiki/")
+const BASE = import.meta.env.BASE_URL ?? '/';
+
+const toUrlFromId = (id: string) => joinBase(BASE, idToPath(id));
+
+// --- dates ---
+const getUpdatedDate = (e: CollectionEntry<'docs'>) => {
+  // on priorise frontmatter lastUpdated, sinon date, sinon created
   const d = (e.data as any).lastUpdated ?? (e.data as any).date ?? (e.data as any).created;
   return d ? new Date(d as any) : undefined;
 };
 
 const recentModified = entries
-  .map((e) => ({ e, date: getDate(e) }))
+  .map((e) => ({ e, date: getUpdatedDate(e) }))
   .filter((x) => !!x.date)
   .sort((a, b) => b.date!.getTime() - a.date!.getTime())
   .slice(0, 10);
 
 const recentCreated = entries
-  .map((e) => ({ e, date: (e.data as any).created ? new Date((e.data as any).created) : undefined }))
+  .map((e) => ({
+    e,
+    date: (e.data as any).created ? new Date((e.data as any).created) : undefined,
+  }))
   .filter((x) => !!x.date)
   .sort((a, b) => b.date!.getTime() - a.date!.getTime())
   .slice(0, 10);
 ---
 
-<section>
-  <h2>Dernières pages modifiées</h2>
-  <ul>
-    {recentModified.map(({ e, date }) => (
-      <li>
-        <a href={toUrlFromId(e.id)}>{e.data.title}</a>
-        {date && <small> — {date.toLocaleDateString('fr-FR')}</small>}
-      </li>
-    ))}
-  </ul>
+<section class="space-y-6">
+  <div>
+    <h2 class="text-xl font-semibold">Dernières pages modifiées</h2>
+    <ul class="list-disc pl-5">
+      {recentModified.length
+        ? recentModified.map(({ e, date }) => (
+            <li>
+              <a href={toUrlFromId(e.id)}>{e.data.title}</a>
+              {date && <small> — {date.toLocaleDateString('fr-FR')}</small>}
+            </li>
+          ))
+        : <li>Aucune date trouvée (ajoute `lastUpdated` en frontmatter ou vérifie l’historique Git complet).</li>}
+    </ul>
+  </div>
 
-  <h2>Dernières pages créées</h2>
-  <ul>
-    {recentCreated.map(({ e, date }) => (
-      <li>
-        <a href={toUrlFromId(e.id)}>{e.data.title}</a>
-        {date && <small> — {date.toLocaleDateString('fr-FR')}</small>}
-      </li>
-    ))}
-  </ul>
+  <div>
+    <h2 class="text-xl font-semibold">Dernières pages créées</h2>
+    <ul class="list-disc pl-5">
+      {recentCreated.length
+        ? recentCreated.map(({ e, date }) => (
+            <li>
+              <a href={toUrlFromId(e.id)}>{e.data.title}</a>
+              {date && <small> — {date.toLocaleDateString('fr-FR')}</small>}
+            </li>
+          ))
+        : <li>Ajoute un champ <code>created:</code> dans le frontmatter pour alimenter cette liste.</li>}
+    </ul>
+  </div>
 </section>
