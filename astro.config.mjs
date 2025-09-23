@@ -14,14 +14,27 @@ export default defineConfig({
           label: 'Bienvenue !',
           slug: 'index',       
         },
-		{
-			label: 'Base de données',
-			items: [
-				{label: 'psql', link: 'bdd/psql' },
-				{label: 'postgreSQL', link: 'bdd/postgres' },
-				
-			]
-		}
+        {
+          label: 'Base de données',
+          items: [
+            {label: 'Psql', link: 'bdd/psql' },
+            {label: 'PostgreSQL', link: 'bdd/postgres' },
+            
+          ]
+        },
+        {
+          label: 'Astro - Starlight',
+          items: [
+            {label: 'Présentation', link: 'astro/presentation' },
+            {label: 'Fonctionnalités', link: 'astro/fonctionnalites' },
+                                  ]
+        },
+        {
+          label : 'Git',
+          items: [
+            {label: 'Présentation', link: 'git/presentation'},
+          ]
+        },
       ],
     }),
   ],
