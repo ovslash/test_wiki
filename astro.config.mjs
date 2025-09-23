@@ -7,6 +7,7 @@ export default defineConfig({
   base: '/test_wiki/',
   integrations: [
     starlight({
+      lastUpdated: true,
       title: 'Mon Aide-Mémoire',
       sidebar: [
         {
