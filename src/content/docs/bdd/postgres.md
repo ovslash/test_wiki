@@ -1,6 +1,7 @@
 ---
 title: PostgreSQL
 description: Cheatsheet postgreSQL + liens utiles
+created: 2025-09-20
 ---
 
 PostgreSQL est un système de gestion de base de données relationnelle (SGBDR) **open-source** puissant et extensible.  
