@@ -1,6 +1,7 @@
 ---
 title: psql
 description: Cheatsheet psql + liens utiles
+created: 2025-09-20
 ---
 
 > Outil en ligne de commande pour [PostgreSQL](postgres).

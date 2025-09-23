@@ -1,0 +1,62 @@
+---
+// src/components/RecentDocs.astro
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+// toutes les pages de la doc
+const entries = await getCollection('docs');
+
+// fabrique un href à partir d'un "id" d'entrée de collection
+const toUrlFromId = (id: string) => {
+  // préfixe de langue si votre site n’est pas en locale "root"
+  const locale = Astro.locals?.starlightRoute?.locale;
+  const localePrefix = locale ? `/${locale}` : '';
+
+  // 1) retire /index.md/ .mdx et normalise le trailing slash
+  let path = '/' + id
+    .replace(/(\/)?index\.mdx?$/i, '$1')   // .../guide/index.md -> .../guide
+    .replace(/\.(md|mdx|markdoc)$/i, '');  // .../guide -> .../guide
+  if (!path.endsWith('/')) path += '/';
+
+  return `${localePrefix}${path}`;
+};
+
+// récupère une date pour trier (lastUpdated en frontmatter > date > created)
+const getDate = (e: CollectionEntry<'docs'>) => {
+  const d = (e.data as any).lastUpdated ?? (e.data as any).date ?? (e.data as any).created;
+  return d ? new Date(d as any) : undefined;
+};
+
+const recentModified = entries
+  .map((e) => ({ e, date: getDate(e) }))
+  .filter((x) => !!x.date)
+  .sort((a, b) => b.date!.getTime() - a.date!.getTime())
+  .slice(0, 10);
+
+const recentCreated = entries
+  .map((e) => ({ e, date: (e.data as any).created ? new Date((e.data as any).created) : undefined }))
+  .filter((x) => !!x.date)
+  .sort((a, b) => b.date!.getTime() - a.date!.getTime())
+  .slice(0, 10);
+---
+
+<section>
+  <h2>Dernières pages modifiées</h2>
+  <ul>
+    {recentModified.map(({ e, date }) => (
+      <li>
+        <a href={toUrlFromId(e.id)}>{e.data.title}</a>
+        {date && <small> — {date.toLocaleDateString('fr-FR')}</small>}
+      </li>
+    ))}
+  </ul>
+
+  <h2>Dernières pages créées</h2>
+  <ul>
+    {recentCreated.map(({ e, date }) => (
+      <li>
+        <a href={toUrlFromId(e.id)}>{e.data.title}</a>
+        {date && <small> — {date.toLocaleDateString('fr-FR')}</small>}
+      </li>
+    ))}
+  </ul>
+</section>
