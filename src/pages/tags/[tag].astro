@@ -1,0 +1,55 @@
+---
+/** 1) Le layout Starlight DOIT être le 1er import */
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import AnchorHeading from '@astrojs/starlight/components/AnchorHeading.astro';
+
+import { getCollection, type CollectionEntry } from 'astro:content';
+import { slugify } from '../../lib/slug';
+
+type DocEntry = CollectionEntry<'docs'>;
+
+export async function getStaticPaths() {
+  const docs = await getCollection('docs');
+  const tags = new Set<string>();
+  for (const d of docs) for (const t of d.data.tags ?? []) tags.add(slugify(t));
+  return [...tags].map((t) => ({ params: { tag: t } }));
+}
+
+const { tag } = Astro.params;
+const docs = await getCollection('docs');
+const matches = docs
+  .filter((d) => (d.data.tags ?? []).some((t) => slugify(t) === tag))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title, 'fr'));
+
+/** Libellé humain pour le H1/meta (retombe sur le slug si introuvable) */
+const human = (() => {
+  for (const d of docs)
+    for (const t of d.data.tags ?? [])
+      if (slugify(t) === tag) return t;
+  return tag!;
+})();
+
+const base = import.meta.env.BASE_URL || '/';
+---
+
+<StarlightPage
+  frontmatter={{ title: `Tag: ${human}` }}
+  hasSidebar={true}
+>
+  <p><a href={`${base}tags/`}>&larr; Tous les tags</a></p>
+
+  <AnchorHeading level="2" id="pages">Pages avec « {human} »</AnchorHeading>
+
+  {matches.length === 0 ? (
+    <p>Aucune page pour ce tag.</p>
+  ) : (
+    <ul>
+      {matches.map((d: DocEntry) => (
+        <li>
+          <a href={`${base}${d.slug}/`}>{d.data.title}</a>
+          {d.data.description && <small> — {d.data.description}</small>}
+        </li>
+      ))}
+    </ul>
+  )}
+</StarlightPage>

@@ -10,6 +10,8 @@ export const collections = {
       extend: z.object({
         // champ perso pour trier les pages "récentes"
         created: z.coerce.date().optional(),
+
+        tags: z.array(z.string()).default([]),
       }),
     }),
   }),
