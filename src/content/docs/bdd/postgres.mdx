@@ -2,7 +2,15 @@
 title: PostgreSQL
 description: Cheatsheet postgreSQL + liens utiles
 created: 2025-09-20
+tags: ["Bdd", "sql"]
 ---
+
+import TagChips from "../../../components/TagChips.astro";
+
+<TagChips tags={frontmatter.tags} />
+---
+
+## Présentation
 
 PostgreSQL est un système de gestion de base de données relationnelle (SGBDR) **open-source** puissant et extensible.  
 Il est largement utilisé pour sa robustesse, sa conformité aux standards SQL et sa capacité à gérer de gros volumes de données.
@@ -12,4 +20,3 @@ Il est largement utilisé pour sa robustesse, sa conformité aux standards SQL e
 ---
 
 Pour utiliser PostgreSQL en ligne de commande  [psql](psql).
-
