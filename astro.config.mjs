@@ -1,40 +1,38 @@
 // astro.config.mjs
-import { defineConfig } from 'astro/config';
-import starlight from '@astrojs/starlight';
-import mdx from '@astrojs/mdx';
+import { defineConfig } from "astro/config";
+import starlight from "@astrojs/starlight";
+import mdx from "@astrojs/mdx";
 
 export default defineConfig({
-  site: 'https://ovslash.github.io/test_wiki',
-  base: '/test_wiki/',
+  site: "https://ovslash.github.io/test_wiki",
+  base: "/test_wiki/",
+  trailingSlash: "always",
   integrations: [
     starlight({
       lastUpdated: true,
-      title: 'Mon Aide-Mémoire',
+      title: "Mon Aide-Mémoire",
       sidebar: [
         {
-          label: 'Bienvenue !',
-          slug: 'index',       
+          label: "Bienvenue !",
+          slug: "index",
         },
         {
-          label: 'Base de données',
+          label: "Base de données",
           items: [
-            {label: 'Psql', link: 'bdd/psql' },
-            {label: 'PostgreSQL', link: 'bdd/postgres' },
-            
-          ]
+            { label: "Psql", link: "bdd/psql" },
+            { label: "PostgreSQL", link: "bdd/postgres" },
+          ],
         },
         {
-          label: 'Astro - Starlight',
+          label: "Astro - Starlight",
           items: [
-            {label: 'Présentation', link: 'astro/presentation' },
-            {label: 'Fonctionnalités', link: 'astro/fonctionnalites' },
-                                  ]
+            { label: "Présentation", link: "astro/presentation" },
+            { label: "Fonctionnalités", link: "astro/fonctionnalites" },
+          ],
         },
         {
-          label : 'Git',
-          items: [
-            {label: 'Présentation', link: 'git/presentation'},
-          ]
+          label: "Git",
+          items: [{ label: "Présentation", link: "git/presentation" }],
         },
       ],
     }),
